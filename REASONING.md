@@ -1,55 +1,49 @@
-# Reasoning Before Execution
-
-Write the rule behind each case before you commit your predictions. Replace
-every placeholder line below with one to three sentences that name the rule
-producing that case's value, type, length, and dimensions. One rule is enough.
-After you run and find a miss, add a short correction entry under that case in a
-later commit.
+# Reasoning
 
 ## P01
-c() makes all the values use one common type, following the order logical, integer, double, and character. Since 3.5 is a double, the whole vector becomes double, giving [1,2,3.5]; it has length 3 and no dimensions.
+The coercion ladder runs logical, integer, double, character. The 3.5 is a double, so TRUE becomes 1 and 2L becomes 2. The value is [1,2,3.5], type double, length 3, no dimensions.
 
 ## P02
-Since c() combines the values into one atomic vector and there is a character value, everything is coerced to character. The result is ["1","2","TRUE"], with length 3 and no dimensions.
+The string "2" is character, the top of the ladder, so every element becomes character, and TRUE becomes "TRUE". The value is ["1","2","TRUE"], type character, length 3, no dimensions.
 
 ## P03
-R recycles the shorter vector [1,2] to [1,2,1,2] before doing the addition element by element. The result is [11,22,31,42]; all values are integers, so the type is integer, length is 4, and there are no dimensions.
+The shorter vector c(1L,2L) is recycled across four positions, so we add 1,2,1,2. Integer plus integer stays integer. The value is [11,22,31,42], length 4, no dimensions.
 
 ## P04
-Positive indices select the requested positions in order, so positions 3 and 1 give third = 9 and first = 8. The result stays integer, has length 2, and has no dimensions.
+Indexing with c(3L,1L) picks positions 3 then 1, in that order, and the names stay attached. The value is [third=9,first=8], type integer, length 2, no dimensions.
 
 ## P05
-A negative index means to exclude that position, so -2L removes the second value, 7, from the vector. This leaves [4,9], which is integer with length 2 and no dimensions.
+A negative index excludes a position, so -2L removes the 7. The value is [4,9], type integer, length 2, no dimensions.
 
 ## P06
-is.na(x) | x > 10L gives [FALSE,TRUE,TRUE,FALSE], because TRUE | NA is TRUE, so positions 2 and 3 are selected. The result is [NA,12]; it stays integer, has length 2, and has no dimensions.
+is.na(x) is F,T,F,F and x > 10L is F,NA,T,F. For OR, TRUE | NA is TRUE, so the combined mask is F,T,T,F. It selects the NA and the 12. The value is [NA,12], type integer, length 2, no dimensions.
 
 ## P07
-A factor stores integer codes and uses the given levels as labels, so low, high, low corresponds to integer codes 1,2,1. Therefore its type is integer, length is 3, and it has no dimensions.
+A factor stores integer codes plus level labels, so typeof is integer even though class is factor. Levels follow the order supplied: low, high. Length is 3 and there are no dimensions.
 
 ## P08
-A list can keep different types in separate elements, so the integer vector scores and character label stay as they are. There are 2 top-level elements, so the type is list, length is 2, and there are no dimensions.
+A list can hold unlike items, and length counts top-level elements. It has two items, scores and label. The type is list, length 2, no dimensions.
 
 ## P09
-A data frame is a list of equal-length columns, so its typeof() is list even though it acts like a data frame. It has 2 columns and 2 rows, giving length 2 and dimensions 2x2.
+A data frame is a list of equal-length columns, so typeof is list and length counts the 2 columns. Its dimensions are 2 rows by 2 columns, so dim is 2x2.
 
 ## P10
-The matrix is filled by column, so matrix(1:6, nrow=2L) has storage order 1,2,3,4,5,6, and [10L,20L] is recycled as 10,20,10,20,10,20. The result is `matrix[2x3](11,22,13,24,15,26)`, with integer type, length 6, and dimensions 2x3.
+A matrix is a plain vector with a dim attribute, filled by columns, so the stored order is 1:6. c(10L,20L) recycles down that order as 10,20,10,20,10,20. Integer plus integer stays integer. The value is matrix[2x3](11,22,13,24,15,26), length 6, dim 2x3.
 
 ## P11
-The vector contains an NA and mean() is not told to remove it, so the result is NA. Since the input is double, the result is double with length 1 and no dimensions.
+Arithmetic with a missing value gives a missing value, so mean of data containing NA is NA. NA_real_ is a double, so the type is double. The value is [NA], length 1, no dimensions.
 
 ## P12
-With na.rm=TRUE, the missing value is removed before getting the mean, so the mean of 8 and 10 is 9. The result is double, has length 1, and has no dimensions.
+na.rm = TRUE removes the missing value first, so the mean of 8 and 10 is 9. The mean is a double of length 1 with no dimensions.
 
 ## P13
-x starts as an integer vector, but assigning the double 2.5 makes R widen the whole atomic vector to double. The result is [1,2.5,3], with length 3 and no dimensions.
+1:3 is an integer vector. Assigning the double 2.5 into position 2 widens the whole vector to double, which is a mixed-mode assignment. The value is [1,2.5,3], type double, length 3, no dimensions.
 
 ## P14
-ifelse() chooses 0 for the missing score and doubles the nonmissing scores, giving [14,0,24,8], then values greater than 15 are replaced with 15. The final result is [14,0,15,8], which is double with length 4 and no dimensions.
+ifelse gives 14,0,24,8, because the NA position takes the yes value 0 and the others are doubled. The subassignment then caps anything above 15 at 15, so 24 becomes 15. The value is [14,0,15,8], type double, length 4, no dimensions.
 
 ## P15
-The array has dimensions 2x2x2, so it contains 2 * 2 * 2 = 8 integer values stored in order from 1 to 8. Therefore the value is `array[2x2x2](1,2,3,4,5,6,7,8)`, the type is integer, the length is 8, and the dimensions are 2x2x2.
+An array is an atomic vector with a dim attribute, stored down the columns. 1:8 is integer, so the type is integer. Length is 8 and dim is 2x2x2.
 
 ## P16
-Index 0L selects nothing, so the result is an empty vector of the same atomic type as the original vector. Therefore the value is [], the type is integer, the length is 0, and there are no dimensions.
+Index 0 selects nothing and returns a zero-length vector of the same atomic type. The value is [], type integer, length 0, no dimensions.
