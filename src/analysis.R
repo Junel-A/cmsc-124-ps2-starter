@@ -119,7 +119,25 @@ clean_scores_scalar <- function(scores) {
 # order. factor(groups, levels = unique(groups)) keeps first-appearance order.
 # unname() is what strips the names off the two score columns.
 build_roster <- function(student_names, groups, scores) {
-    stop("TODO: implement build_roster()")
+    # Clean scores first so adjusted_score and passed use the same values
+    adjusted <- clean_scores_vector(scores)
+    
+    roster <- data.frame(
+        name = student_names,
+        
+        # factor() makes groups categorical; unique() keeps first-seen order
+        group = factor(groups, levels = unique(groups)),
+        
+        # unname() removes attached labels and keeps the values
+        raw_score = unname(scores),
+        adjusted_score = unname(adjusted),
+        passed = unname(adjusted >= 12),
+        
+        # Keep name as character instead of converting it to a factor
+        stringsAsFactors = FALSE
+    )
+    
+    return(roster)
 }
 
 # summarize_roster(roster)
