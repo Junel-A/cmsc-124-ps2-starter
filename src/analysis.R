@@ -29,7 +29,17 @@
 # <-, replaces exactly the elements it marks and leaves the names attached. That
 # is the subassignment the constraint is asking for.
 clean_scores_vector <- function(scores) {
-    stop("TODO: implement clean_scores_vector()")
+
+    # replace missing scores with 0, so they can be calculated too
+    scores[is.na(scores)] <- 0
+
+    # turn scores into double since vec operations apply at every value
+    scores <- scores * 2
+
+    # cap scores at 20 since it is the maximum score
+    scores[scores > 20] <- 20
+
+    return(scores)
 }
 
 # clean_scores_scalar(scores)
@@ -54,7 +64,30 @@ clean_scores_vector <- function(scores) {
 # names attached. Accumulating into a fresh vector with out <- c(out, value)
 # drops them, and the check compares with identical(), which notices.
 clean_scores_scalar <- function(scores) {
-    stop("TODO: implement clean_scores_scalar()")
+
+    # convert scores to double while keeping orig name
+    adjusted_scores <- setNames(as.double(scores), names(scores))
+
+    # seq_along - built-in func to create seq from 1 to vector length
+    for(i in seq_along(adjusted_scores)) {
+
+        # get current score for schecking and adjustment
+        score <- adjusted_scores[[i]]
+
+        # missing scores = 0 to avoid bugs during calculation
+        if(is.na(score)) {
+            result <- 0
+        } else {
+
+            # double the score while keeping max val at 20
+            result <- min (2 * score, 20)
+        }
+
+        # store the adjusted result back in orig position
+        adjusted_scores[[i]] <- result
+    }
+
+    return(adjusted_scores)
 }
 
 # build_roster(student_names, groups, scores)
