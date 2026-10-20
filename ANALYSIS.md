@@ -1,4 +1,4 @@
-# Vector vs Scalar Cleaning
+# Vector and Scalar Evaluation
 
 ## Tracing Grace's NA
 
@@ -9,3 +9,13 @@ In clean_scores_scalar(), Grace is reached on the second pass of the for loop. T
 ## Operations on all elements at once
 
 In the vector version, is.na(scores), scores * 2, and scores > 20 each process the whole vector in one expression. The two subassignments then replace every marked position in one step.
+
+## Loop order and recycling
+
+The scalar version goes through positions 1 to 4 in order, and each pass only reads and writes its own element. Since no pass depends on another, the order does not change the final answer. The vector is only partially cleaned while the loop runs, while every element is at the same stage in the vector version.
+
+Recycling would matter if a step used a vector shorter than scores. Here, 2 and 20 have length one, so R repeats them across all elements. If scores * 2 was written as scores * c(2,3), the 2 and 3 would alternate, so Barbara would be multiplied by 3. The same applies to scores[is.na(scores)] <- c(0,1) if there were four NA values, where 0 and 1 would cycle through the marked positions. If the lengths do not divide evenly, R gives a warning but still returns a result. The scalar loop does not use recycling because each pass works with one value.
+
+## Which version to keep
+
+Overall, clean_scores_vector() is the better version to keep. It is shorter, and each line follows one rule, which is to replace missing values, double, then cap. For example, scores * 2 followed by scores[scores > 20] <- 20 does in two lines what the scalar loop's min(2 * score, 20) does for each element. R applies these operations to the whole vector, which is usually faster than a loop. The scalar loop would be more useful when the result of one element depends on the previous element, since a vector expression cannot always directly express that.
