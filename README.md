@@ -4,6 +4,13 @@
 This repository contains the R prediction corpus and the four functions for
 Problem Set 2. The assignment manual defines the work and the submission rules.
 
+## Members
+| Name | GitHub username |
+|---|---|
+| Junel O. Arellano | @Junel-A |
+| Percie Louise Y. Samaniego | @perky-boo25 |
+
+
 ## Layout
 
 ```text
